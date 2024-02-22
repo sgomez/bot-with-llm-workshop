@@ -3,29 +3,69 @@ import logging
 import sys
 
 import typer
+from langchain.text_splitter import MarkdownHeaderTextSplitter
 from rich import print, print_json
 
+from tgbot.infrastructure.bot.model import general_question
+from tgbot.infrastructure.bot.model_with_memory import general_question_with_memory
 from tgbot.infrastructure.cli.AsyncTyper import AsyncTyper
 
 from ..bot import bot
+from ..chroma import database
 from ..config import settings
-from ..orm.orm import init, setup
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+
+headers_to_split_on = [
+    ("#", "Header 1"),
+    ("##", "Header 2"),
+]
+
+chunk_size = 1000
+chunk_overlap = 0
 
 
 app = AsyncTyper()
 
 
 @app.command()
+def train() -> None:
+    markdown_splitter = MarkdownHeaderTextSplitter(headers_to_split_on=headers_to_split_on)
+
+    documents = [
+        "documents/reglamento-tfg-epsc/01-capitulo-01.md",
+        "documents/reglamento-tfg-epsc/01-capitulo-02.md",
+        "documents/reglamento-tfg-epsc/01-capitulo-03.md",
+        "documents/reglamento-tfg-epsc/01-capitulo-04.md",
+        "documents/reglamento-tfg-epsc/01-capitulo-05.md",
+        "documents/reglamento-tfg-epsc/01-capitulo-06.md",
+        "documents/reglamento-tfg-epsc/01-capitulo-07.md",
+    ]
+
+    for document in documents:
+        with open(document) as fd:
+            md_file = fd.read()
+            md_header_splits = markdown_splitter.split_text(md_file)
+            database.add_documents(md_header_splits)
+
+    database.persist()
+
+
+@app.command()
+def ask(question: str) -> None:
+    result = general_question(question)
+    print(result)
+
+
+@app.command()
+def askm(chat_id: str, question: str) -> None:
+    result = general_question_with_memory(chat_id, question)
+    print(result)
+
+
+@app.command()
 def about() -> None:
     typer.echo("This is a bot created from aulasoftwarelibre/telegram-bot-template")
-
-
-@app.async_command()
-async def configure() -> None:
-    """Configure the database schema."""
-    await setup()
 
 
 @app.async_command()
@@ -75,10 +115,9 @@ async def install() -> None:
 async def serve() -> None:
     """Run polling bot version."""
     logging.info("Starting...")
-    await init()
 
     await bot.remove_webhook()
-    await bot.infinity_polling(logger_level=logging.INFO)
+    await bot.infinity_polling(logger_level=logging.INFO, restart_on_change=True)
 
     await bot.close_session()
 

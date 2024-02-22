@@ -17,8 +17,17 @@ python = "^3.10"
 fastapi = {extras = ["all"], version = "^0.109.0"}
 pytelegrambotapi = "^4.14.1"
 typer = {extras = ["all"], version = "^0.9.0"}
-tortoise-orm = {extras = ["asyncpg"], version = "^0.20.0"}
 aiohttp = "^3.9.1"
+langchain = "^0.1.8"
+langchain-openai = "^0.0.6"
+chromadb = "^0.4.22"
+sentence-transformers = "^2.3.1"
+sqlmodel = "^0.0.16"
+langchainhub = "^0.1.14"
+duckduckgo-search = "^4.4.3"
+langchain-community = "^0.0.21"
+watchdog = "^4.0.0"
+psutil = "^5.9.8"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -27,7 +36,6 @@ ruff = "^0.2.0"
 pre-commit = "^3.6.0"
 black = "^24.1.1"
 commitizen = "^3.13.0"
-tortoise-orm-stubs = "^1.0.2"
 
 
 [build-system]

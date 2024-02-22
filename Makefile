@@ -10,7 +10,7 @@ certs:
 
 .PHONY: configure
 configure:
-	poetry run cli configure
+	poetry run cli train
 
 .PHONY: server
 server:
