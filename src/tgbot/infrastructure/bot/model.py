@@ -1,12 +1,7 @@
-import os
-
 from langchain.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
-from langchain_openai import ChatOpenAI
 
-os.environ["OPENAI_API_KEY"] = "OPENAI_API_KEY"
-
-model = ChatOpenAI(base_url="http://localhost:8080/v1", temperature=0)
+from .llm import llm
 
 prompt = ChatPromptTemplate.from_messages(
     [
@@ -21,7 +16,7 @@ prompt = ChatPromptTemplate.from_messages(
 
 output_parser = StrOutputParser()
 
-chain = prompt | model | output_parser
+chain = prompt | llm | output_parser
 
 
 def general_question(message: str) -> str:

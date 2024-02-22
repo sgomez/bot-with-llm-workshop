@@ -1,16 +1,11 @@
-import os
-
 from langchain import hub
 from langchain.agents import (
     AgentExecutor,
     create_react_agent,
 )
 from langchain_core.tools import Tool
-from langchain_openai import ChatOpenAI
 
-os.environ["OPENAI_API_KEY"] = "OPENAI_API_KEY"
-
-llm = ChatOpenAI(base_url="http://localhost:8080/v1", temperature=0)
+from .llm import llm
 
 
 def getWordLength(word: str) -> int:
@@ -42,8 +37,6 @@ tools = [
 
 
 prompt = hub.pull("hwchase17/react")
-
-llm_with_tools = llm.bind_tools(tools)
 
 
 agent = create_react_agent(llm, tools, prompt)

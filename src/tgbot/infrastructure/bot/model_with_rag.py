@@ -4,13 +4,11 @@ from langchain.chains import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
-from langchain_openai import ChatOpenAI
 
 from ..chroma import database
+from .llm import llm
 
-os.environ["OPENAI_API_KEY"] = "OPENAI_API_KEY"
-
-model = ChatOpenAI(base_url="http://localhost:8080/v1", temperature=0)
+os.environ["TOKENIZERS_PARALLELISM"] = "False"
 
 
 output_parser = StrOutputParser()
@@ -28,7 +26,7 @@ Question: {input}"""
 
 
 retriever = database.as_retriever(search_kwargs={"k": 10})
-document_chain = create_stuff_documents_chain(model, prompt, output_parser=output_parser)
+document_chain = create_stuff_documents_chain(llm, prompt, output_parser=output_parser)
 retrieval_chain = create_retrieval_chain(retriever, document_chain)
 
 

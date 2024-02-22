@@ -1,19 +1,14 @@
-import os
-
 from langchain_community.chat_message_histories import SQLChatMessageHistory
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables.history import RunnableWithMessageHistory
-from langchain_openai import ChatOpenAI
+
+from .llm import llm
 
 chat_message_history = SQLChatMessageHistory(
     session_id="test_session_id", connection_string="sqlite:///./data/sessions.db"
 )
 
-os.environ["OPENAI_API_KEY"] = "OPENAI_API_KEY"
-os.environ["TOKENIZERS_PARALLELISM"] = "False"
-
-llm = ChatOpenAI(base_url="http://localhost:8080/v1", temperature=0)
 
 prompt = ChatPromptTemplate.from_messages(
     [

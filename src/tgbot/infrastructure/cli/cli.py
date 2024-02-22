@@ -6,8 +6,9 @@ import typer
 from langchain.text_splitter import MarkdownHeaderTextSplitter
 from rich import print, print_json
 
-from tgbot.infrastructure.bot.model import general_question
+from tgbot.infrastructure.bot.agent import agent_question
 from tgbot.infrastructure.bot.model_with_memory import general_question_with_memory
+from tgbot.infrastructure.bot.model_with_tool import general_question
 from tgbot.infrastructure.cli.AsyncTyper import AsyncTyper
 
 from ..bot import bot
@@ -60,6 +61,12 @@ def ask(question: str) -> None:
 @app.command()
 def askm(chat_id: str, question: str) -> None:
     result = general_question_with_memory(chat_id, question)
+    print(result)
+
+
+@app.command()
+def askg(question: str) -> None:
+    result = agent_question(question)
     print(result)
 
 
